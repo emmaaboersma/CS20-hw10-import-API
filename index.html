@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script   src="https://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="   crossorigin="anonymous"></script>
+        <style>
+            table,tr,th,td {
+                border: 1px solid black;
+            }
+        </style>
+        
+    </head>
+    <body onload="loadFile()">
+        <h1>JSON DATA</h1>
+
+        <p>
+            The API that I selected is from Coin Gecko. It provides data about
+            crypto currencies, including coins, exchanges, and markets. I
+            found it thorugh the <a
+            href="https://canvas.tufts.edu/courses/35643/pages/reading-ajax?module_item_id=668155"
+            target="_blank">link on canvas</a>, which took me to <a href="https://mixedanalytics.com/blog/list-actually-free-open-no-auth-needed-apis/"
+            target="_blank">this list</a>.
+        </p>
+        <p>
+            The API I chose has a bunch of different URL extensions that give
+            users access to different aspects of crypto information. I chose
+            to focus on the exchange rates between crypto currency and
+            different countries' currency, so I used the /exchange_rates
+            extension. From there, I wanted to print out all of the
+            currencies, so I used a forEach loop to get through all the JSON
+            data. 
+        </p>
+        <p>
+            This could be helpful for any sort of ecommerce website, since
+            crypto currency is becoming more widely used and regarded. For
+            example, El Salvador recently changed their official currency to
+            Bitcoin. So for people buying El Salvadorian products from abroad,
+            they would need to be aware of the exchange rate. It could also be
+            used in stock market sites to inform customers of how much certain
+            crypto is worth at the moment, so customers could make an educated
+            decision about whether to buy or not.
+        </p>
+
+        <div id="data">Loading...</div>
+        <table style="width: 100%">
+            <tr>
+                <th>Name</th>
+                <th>Unit</th>
+                <th>Value</th>
+                <th>Type</th>
+            </tr>
+            <tbody id="myTable"></tbody>
+        </table>
+
+        <!-- <div id="country">Country</div> -->
+
+        <script>
+
+            function loadFile() {
+                    /* Step 1: Make instance of request object...
+                    ...to make HTTP request after page is loaded*/
+                    request = new XMLHttpRequest();
+                    console.log("1 - request object created");
+        
+                    // Step 2: Set the URL for the AJAX request to be the JSON file
+        
+                    request.open("GET", "https://api.coingecko.com/api/v3/exchange_rates", true);
+    
+                    console.log("2 - opened request file");
+        
+                    // Step 3: set up event handler/callback
+    
+                    request.onreadystatechange = function() {
+                        console.log("3 - readystatechange event fired.");
+    
+                        console.log(request.readyState);
+        
+                        if (request.readyState == 4 && request.status == 200) {
+                            document.getElementById("data").innerHTML = "Data retrieved..."
+                            // Step 5: wait for done + success
+    
+                            result = request.responseText;
+                            // console.log(result);
+                            par_result = JSON.parse(result);
+                            console.log(par_result);
+                            str_result = JSON.stringify(par_result);
+                            console.log(str_result);
+                            
+                            console.log(par_result.rates.aed.name);
+                            // document.getElementById("data").innerHTML =
+                            // par_result.rates.aed.name;
+                            
+                            table = document.getElementById("myTable");
+                            
+
+                            Object.entries(par_result.rates).forEach(country => {
+                                // country_str = JSON.stringify(country);
+                                // country_par = JSON.parse(country_str);
+
+                                row = `<tr>
+                                        <td>${country[1].name}</td>
+                                        <td>${country[1].unit}</td>
+                                        <td>${country[1].value}</td>
+                                        <td>${country[1].type}</td>
+                                        </tr>`
+                                
+                                
+
+                                // console.log(country_str);
+                                table.innerHTML += row;
+                            });
+                            
+
+                        }
+                        else if (request.readyState == 4 && request.status != 200) {
+                            document.getElementById("data").innerHTML = "Something is wrong!  Check the logs to see where this went off the rails";
+                        }
+                        else if (request.readyState == 3) {
+                            document.getElementById("data").innerHTML = "Too soon!  Try again";
+                        }
+    
+                    }
+                    // Step 4: fire off the HTTP request
+                    request.send();
+                    console.log("4 - Request sent");
+            } 
+            
+    
+    
+            </script>
+    </body>
+</html>
